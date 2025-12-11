@@ -87,10 +87,6 @@ def build_model_info_string(cfg):
     patch = cfg["dataset"]["patch"]
 
     model_cfg = cfg["model"]
-    d_model = model_cfg.get("d_model", None)
-    heads = model_cfg.get("heads", None)
-    depth = model_cfg.get("depth", None)
-    mlp_ratio = model_cfg.get("mlp_ratio", None)
     layers = model_cfg.get("layers", [])
 
     performer_cfg = model_cfg.get("performer", {})
@@ -99,15 +95,6 @@ def build_model_info_string(cfg):
 
     parts = []
     parts.append(f"dataset={dataset_name}")
-    if d_model is not None:
-        parts.append(f"d_model={d_model}")
-    if heads is not None:
-        parts.append(f"heads={heads}")
-    if depth is not None:
-        parts.append(f"depth={depth}")
-    if mlp_ratio is not None:
-        parts.append(f"mlp_ratio={mlp_ratio}")
-    parts.append(f"patch={patch}")
 
     # Performer-specific info (only meaningful if you actually use Perf layers)
     if m is not None:

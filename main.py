@@ -5,8 +5,8 @@ For each config in HYBRID_CONFIGS, this script:
 - trains a HybridViT model defined in models/hybrid_vit.py
 - logs metrics to ./runs/<config_name>/metrics.csv
 - then runs post-training analysis, which:
-    * lit metrics.csv
-    * génère les courbes et summary dans ./outputs/<config_name>/
+    - reads metrics from ./runs/<config_name>/metrics.csv
+    - creates plots + summary in ./outputs/<config_name>/
 """
 
 import torch
@@ -17,8 +17,8 @@ from models.model_analysis import analyze_config  # <- NEW
 
 # List of config files you want to run
 HYBRID_CONFIGS = [
-    "configs/mnist_baseline.yaml",
-    "configs/cifar10_baseline.yaml",
+    "configs/mnist_test.yaml",
+    "configs/cifar10_test.yaml",
 ]
 
 
@@ -33,10 +33,6 @@ def main():
     print(f"\nUsing device: {device}")
 
     for cfg_path in HYBRID_CONFIGS:
-        print("\n" + "=" * 80)
-        print(f"Running experiment from config: {cfg_path}")
-        print("=" * 80 + "\n")
-
         # 1) Train model (writes metrics.csv in ./runs/<config_name>/)
         train_hybrid_performer_from_cfg(cfg_path, device=device)
 

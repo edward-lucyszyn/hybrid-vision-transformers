@@ -639,6 +639,13 @@ def train_hybrid_performer_from_cfg(
     print(f"  performer_variant: {performer_variant}")
     print(f"  total params     : {num_params:,}")
 
+    # Save number of parameters to a file
+    if os.path.exists(os.path.join(run_dir, "number_of_parameters.txt")):
+        os.remove(os.path.join(run_dir, "number_of_parameters.txt"))
+    param_file = os.path.join(run_dir, "number_of_parameters.txt")
+    with open(param_file, "w") as f:
+        f.write(str(num_params))
+
     # Optimization hyperparameters
     epochs = int(cfg["optim"]["epochs"])
     lr = float(cfg["optim"]["lr"])

@@ -1,0 +1,27 @@
+experiment: cifar10_baseline_d=8
+dataset:
+  name: cifar10
+  root: ./data/cache        # path to store/download CIFAR-10
+  img_size: 32              # CIFAR-10 images are 32x32
+  patch: 4                  # patch size for splitting the image
+  augment: true             # standard train-time aug: random crop + horizontal flip
+model:
+  d_model: 256              # hidden size (embedding dim)
+  heads: 4                  # number of attention heads (256/4 = 64 per head)
+  mlp_ratio: 2.0            # FFN expansion ratio (hidden -> 2*hidden -> hidden)
+  depth: 8                  # number of Transformer blocks
+  layers: ["Reg", "Reg", "Reg", "Reg", "Reg", "Reg", "Reg", "Reg"]   # all regular softmax attention
+  performer:
+    variant: "softmax"  # type of performer attention (softmax or relu)
+    kind: "favor+"      # type of performer attention
+    m: 64               # nb of random features for performer        
+optim:
+  batch_size: 128
+  lr: 0.0003
+  weight_decay: 0.05        # AdamW weight decay
+  epochs: 100               # training epochs
+log:
+  out_dir: ./runs
+  save_every: 10            # checkpoint frequency (epochs)
+misc:
+  seed: 17092003            # random seed for reproducibility

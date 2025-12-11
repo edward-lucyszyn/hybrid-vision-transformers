@@ -1,0 +1,27 @@
+experiment: mnist_baseline_d=2
+dataset:
+  name: mnist
+  root: ./data/cache    # path to store data
+  img_size: 28          # 28 for MNIST
+  patch: 4              # patch size for splitting the image
+  augment: false
+model:
+  d_model: 192
+  heads: 3
+  mlp_ratio: 2.0
+  depth: 2
+  layers: ["Reg"]   # all regular softmax
+  performer:
+    variant: "softmax"  # type of performer attention (softmax or relu)
+    kind: "favor+"      # type of performer attention
+    m: 64               # nb of random features for performer        
+optim:
+  batch_size: 128
+  lr: 0.0003
+  weight_decay: 0.05    # weight decay for optimizer
+  epochs: 50            # number of training epochs
+log:
+  out_dir: ./runs
+  save_every: 5        # model checkpoint save frequency
+misc:
+  seed: 17092003        # random seed for reproducibility
