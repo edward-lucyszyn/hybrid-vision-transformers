@@ -563,9 +563,11 @@ def train_hybrid_performer_from_cfg(
 
     # Metrics CSV file (one line per epoch, updated as we go)
     metrics_path = os.path.join(run_dir, "metrics.csv")
-    if not os.path.exists(metrics_path):
-        with open(metrics_path, "w") as f:
-            f.write("epoch,epoch_time_sec,train_loss,train_acc,val_loss,val_acc\n")
+    # Remove old metrics file if it exists
+    if os.path.exists(metrics_path):
+        os.remove(metrics_path)
+    with open(metrics_path, "w") as f:
+        f.write("epoch,epoch_time_sec,train_loss,train_acc,val_loss,val_acc\n")
 
     # Build dataloaders
     train_loader, val_loader, test_loader, meta = build_dataloaders_from_cfg(cfg)
