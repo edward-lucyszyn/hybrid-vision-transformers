@@ -1,6 +1,0 @@
-Config name: mnist_test
-Model info: dataset=mnist | m=64 | variant=softmax | layers=['Reg']
-
-Num epochs: 2
-Best val accuracy: 85.1200% (epoch 2)
-Total training time: 196.08 s

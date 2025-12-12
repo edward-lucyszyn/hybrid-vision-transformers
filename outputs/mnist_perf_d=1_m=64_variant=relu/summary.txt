@@ -1,0 +1,6 @@
+Config name: mnist_perf_d=1_m=64_variant=relu
+Model info: dataset=mnist | m=64 | variant=relu | layers=['Perf']
+
+Num epochs: 50
+Best val accuracy: 95.0200% (epoch 50)
+Total training time: 661.89 s

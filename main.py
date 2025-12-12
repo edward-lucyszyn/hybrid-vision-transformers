@@ -17,8 +17,47 @@ from models.model_analysis import analyze_config  # <- NEW
 
 # List of config files you want to run
 HYBRID_CONFIGS = [
-    "configs/mnist_test.yaml",
-    "configs/cifar10_test.yaml",
+    # "configs/cifar10_baseline_d=1.yaml", # Not done
+    # "configs/cifar10_baseline_d=2.yaml", # Not done
+    # "configs/cifar10_baseline_d=8.yaml", # Not done
+    # "configs/cifar10_interwined_perf_d=2_m=64_variant=softmax.yaml", # Done
+    # "configs/cifar10_interwined_perf_d=8_m=64_variant=softmax.yaml", # Done
+    # "configs/cifar10_interwined_reg_d=2_m=64_variant=softmax.yaml",
+    # "configs/cifar10_interwined_reg_d=8_m=64_variant=softmax.yaml",
+    # "configs/cifar10_perf_d=1_m=64_variant=relu.yaml",
+    # "configs/cifar10_perf_d=1_m=64_variant=softmax.yaml",
+    # "configs/cifar10_perf_d=2_m=128_variant=relu.yaml",
+    # "configs/cifar10_perf_d=2_m=128_variant=softmax.yaml",
+    # "configs/cifar10_perf_d=2_m=32_variant=relu.yaml",
+    # "configs/cifar10_perf_d=2_m=32_variant=softmax.yaml",
+    # "configs/cifar10_perf_d=2_m=64_variant=relu.yaml",
+    # "configs/cifar10_perf_d=8_m=64_variant=relu.yaml",
+    # "configs/cifar10_perf_d=8_m=64_variant=softmax.yaml",
+    # "configs/cifar10_perf_reg_d=2_m=64_variant=softmax.yaml",
+    # "configs/cifar10_perf_reg_d=8_m=64_variant=softmax.yaml",
+    # "configs/cifar10_reg_perf_d=2_m=64_variant=softmax.yaml",
+    # "configs/cifar10_reg_perf_d=8_m=64_variant=softmax.yaml",
+    # "configs/mnist_baseline_d=1.yaml", # Not done
+    # "configs/mnist_baseline_d=2.yaml", # Not done
+    # "configs/mnist_baseline_d=6.yaml", # Not done
+    # "configs/mnist_interwined_perf_d=2_m=64_variant=softmax.yaml",
+    # "configs/mnist_interwined_perf_d=6_m=64_variant=softmax.yaml",
+    # "configs/mnist_interwined_reg_d=2_m=64_variant=softmax.yaml",
+    # "configs/mnist_interwined_reg_d=6_m=64_variant=softmax.yaml",
+    # "configs/mnist_perf_d=1_m=64_variant=relu.yaml", # Done
+    # "configs/mnist_perf_d=1_m=64_variant=softmax.yaml", # Done
+    "configs/mnist_perf_d=2_m=128_variant=relu.yaml",
+    # "configs/mnist_perf_d=2_m=128_variant=softmax.yaml", # Done
+    # "configs/mnist_perf_d=2_m=32_variant=relu.yaml", # Done
+    # "configs/mnist_perf_d=2_m=32_variant=softmax.yaml", # Done
+    # "configs/mnist_perf_d=2_m=64_variant=relu.yaml", # Done
+    # "configs/mnist_perf_d=2_m=64_variant=softmax.yaml", # Done
+    "configs/mnist_perf_d=6_m=64_variant=relu.yaml",
+    "configs/mnist_perf_d=6_m=64_variant=softmax.yaml",
+    "configs/mnist_perf_reg_d=2_m=64_variant=softmax.yaml",
+    "configs/mnist_perf_reg_d=6_m=64_variant=softmax.yaml",
+    "configs/mnist_reg_perf_d=2_m=64_variant=softmax.yaml",
+    "configs/mnist_reg_perf_d=6_m=64_variant=softmax.yaml",
 ]
 
 
@@ -34,7 +73,7 @@ def main():
 
     for cfg_path in HYBRID_CONFIGS:
         # 1) Train model (writes metrics.csv in ./runs/<config_name>/)
-        train_hybrid_performer_from_cfg(cfg_path, device=device)
+        train_hybrid_performer_from_cfg(cfg_path, device=device, restart_from_save=True)
 
         # 2) Run analysis (reads ./runs/<config_name>/metrics.csv
         #    and writes plots + summary to ./outputs/<config_name>/)

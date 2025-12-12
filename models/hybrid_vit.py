@@ -495,45 +495,16 @@ def evaluate(model, data_loader, criterion, device):
 def train_hybrid_performer_from_cfg(
     cfg_path: str,
     device=None,
+    restart_from_save: bool = False,
 ):
     """
     Train a HybridPerformer model using a YAML configuration file and
     your custom dataloaders.
 
-    The config is assumed to contain something like:
-
-        experiment: cifar10_baseline
-        dataset:
-          name: cifar10
-          root: ./data/cache
-          img_size: 32
-          patch: 4
-          augment: true
-        model:
-          d_model: 256
-          heads: 4
-          mlp_ratio: 2.0
-          depth: 8
-          layers: ["Reg", "Perf", "Reg", "Perf", "Reg", "Perf", "Reg", "Perf"]
-          performer:
-            kind: "favor+"
-            m: 64      # number of random features for Performer
-        optim:
-          batch_size: 128
-          lr: 0.0003
-          weight_decay: 0.05
-          epochs: 100
-          warmup_epochs: 5
-          grad_clip: 1.0
-        log:
-          out_dir: ./runs
-          save_every: 10
-        misc:
-          seed: 17092003
-          fp16: true
-
-    The `model.layers` list fully controls which layers are regular
-    ("Reg") and which are Performer ("Perf").
+    If restart_from_save=True, the function:
+      - looks for existing checkpoints in run_dir,
+      - resumes from the last checkpoint if needed,
+      - or skips training if the target number of epochs is already reached.
     """
     if device is None:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -543,7 +514,6 @@ def train_hybrid_performer_from_cfg(
     # Read performer variant directly from config (default: 'softmax')
     performer_cfg = cfg["model"].get("performer", {})
     performer_variant = performer_cfg.get("variant", "softmax")  # 'relu' or 'softmax'
-
 
     print("\n" + "=" * 70)
     print(f"Hybrid Performer (variant={performer_variant}) from config: {cfg_path}")
@@ -563,11 +533,21 @@ def train_hybrid_performer_from_cfg(
 
     # Metrics CSV file (one line per epoch, updated as we go)
     metrics_path = os.path.join(run_dir, "metrics.csv")
-    # Remove old metrics file if it exists
-    if os.path.exists(metrics_path):
-        os.remove(metrics_path)
-    with open(metrics_path, "w") as f:
-        f.write("epoch,epoch_time_sec,train_loss,train_acc,val_loss,val_acc\n")
+
+    # Optimization hyperparameters (need epochs for resume logic)
+    epochs = int(cfg["optim"]["epochs"])
+    lr = float(cfg["optim"]["lr"])
+    weight_decay = float(cfg["optim"]["weight_decay"])
+
+    # Init / resume: metrics file
+    if restart_from_save and os.path.exists(metrics_path):
+        print(f"Found existing metrics file at {metrics_path}, appending new epochs.")
+    else:
+        # Either no restart, or no existing metrics file: start fresh
+        if os.path.exists(metrics_path):
+            os.remove(metrics_path)
+        with open(metrics_path, "w") as f:
+            f.write("epoch,epoch_time_sec,train_loss,train_acc,val_loss,val_acc\n")
 
     # Build dataloaders
     train_loader, val_loader, test_loader, meta = build_dataloaders_from_cfg(cfg)
@@ -613,7 +593,7 @@ def train_hybrid_performer_from_cfg(
     print(f"  val samples       : {len(val_loader.dataset)}")
     print(f"  test samples      : {len(test_loader.dataset)}")
 
-    # Create HybridPerformer model using the explicit `layers` list
+    # Create HybridPerformer model using the explicit layers list
     model = HybridPerformer(
         img_size=img_size,
         patch_size=patch_size,
@@ -630,26 +610,21 @@ def train_hybrid_performer_from_cfg(
 
     num_params = sum(p.numel() for p in model.parameters())
     print("\nModel:")
-    print(f"  embed_dim        : {embed_dim}")
+    print(f"  embed_dim         : {embed_dim}")
     print(f"  layers            : {layers}")
     print(f"  depth (len layers): {len(layers)}")
-    print(f"  num_heads        : {num_heads}")
-    print(f"  mlp_ratio        : {mlp_ratio}")
-    print(f"  num_random_feat  : {num_random_features}")
-    print(f"  performer_variant: {performer_variant}")
-    print(f"  total params     : {num_params:,}")
+    print(f"  num_heads         : {num_heads}")
+    print(f"  mlp_ratio         : {mlp_ratio}")
+    print(f"  num_random_feat   : {num_random_features}")
+    print(f"  performer_variant : {performer_variant}")
+    print(f"  total params      : {num_params:,}")
 
-    # Save number of parameters to a file
-    if os.path.exists(os.path.join(run_dir, "number_of_parameters.txt")):
-        os.remove(os.path.join(run_dir, "number_of_parameters.txt"))
+    # Save number of parameters to a file (always overwritten to reflect current model)
     param_file = os.path.join(run_dir, "number_of_parameters.txt")
+    if os.path.exists(param_file):
+        os.remove(param_file)
     with open(param_file, "w") as f:
         f.write(str(num_params))
-
-    # Optimization hyperparameters
-    epochs = int(cfg["optim"]["epochs"])
-    lr = float(cfg["optim"]["lr"])
-    weight_decay = float(cfg["optim"]["weight_decay"])
 
     print("\nOptimization:")
     print(f"  epochs        : {epochs}")
@@ -659,68 +634,145 @@ def train_hybrid_performer_from_cfg(
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
 
-    print("\n" + "=" * 70)
-    print(f"Training for {epochs} epochs...")
-    print("=" * 70)
+    # Resume logic
+    start_epoch = 1
+    skip_training = False
 
+    # Re-load best validation accuracy from existing metrics
     best_val_acc = 0.0
     best_epoch = 0
+    if os.path.exists(metrics_path):
+        with open(metrics_path, "r") as f:
+            header = next(f, None)
+            for line in f:
+                parts = line.strip().split(",")
+                if len(parts) < 6:
+                    continue
+                ep = int(parts[0])
+                val_acc_i = float(parts[5])
+                if val_acc_i > best_val_acc:
+                    best_val_acc = val_acc_i
+                    best_epoch = ep
 
-    for epoch in range(1, epochs + 1):
-        start_time = time.time()
+    if restart_from_save:
+        # Look for existing checkpoints in run_dir
+        ckpt_files = [
+            f for f in os.listdir(run_dir)
+            if f.startswith("checkpoint_epoch_") and f.endswith(".pt")
+        ]
+        if ckpt_files:
+            def extract_epoch(fname: str) -> int:
+                # "checkpoint_epoch_XX.pt" -> XX
+                num_str = fname[len("checkpoint_epoch_"):-3]
+                return int(num_str)
 
-        train_loss, train_acc = train_epoch(
-            model,
-            train_loader,
-            criterion,
-            optimizer,
-            device,
-            epoch=epoch,
-            epochs=epochs,
-        )
-        val_loss, val_acc = evaluate(model, val_loader, criterion, device)
+            epochs_in_ckpt = [extract_epoch(f) for f in ckpt_files]
+            last_epoch = max(epochs_in_ckpt)
+            last_ckpt = os.path.join(run_dir, f"checkpoint_epoch_{last_epoch}.pt")
 
-        epoch_time = time.time() - start_time
+            print(f"\nFound checkpoint {last_ckpt} (epoch {last_epoch}).")
 
-        print(
-            f"Epoch {epoch:03d}/{epochs:03d}: "
-            f"Train Loss {train_loss:.4f}, Acc {train_acc:.2f}% | "
-            f"Val Loss {val_loss:.4f}, Acc {val_acc:.2f}% | "
-            f"Time {epoch_time:.2f}s"
-        )
+            ckpt = torch.load(last_ckpt, map_location=device)
+            model.load_state_dict(ckpt["model_state_dict"])
+            optimizer.load_state_dict(ckpt["optimizer_state_dict"])
 
-        # Append metrics to CSV (updated every epoch)
-        with open(metrics_path, "a") as f:
-            f.write(
-                f"{epoch},{epoch_time:.4f},"
-                f"{train_loss:.6f},{train_acc:.4f},"
-                f"{val_loss:.6f},{val_acc:.4f}\n"
+            # Optionnal consistency checks
+            if "layers" in ckpt and ckpt["layers"] != layers:
+                print("Warning: layers in checkpoint differ from current config.")
+            if "performer_variant" in ckpt and ckpt["performer_variant"] != performer_variant:
+                print("Warning: performer_variant in checkpoint differs from current config.")
+
+            # Clean up metrics file to remove epochs beyond last_epoch
+            if os.path.exists(metrics_path):
+                with open(metrics_path, "r") as f:
+                    lines = f.readlines()
+
+                if lines:
+                    header = lines[0]
+                    new_lines = [header]
+                    for line in lines[1:]:
+                        parts = line.strip().split(",")
+                        if not parts or not parts[0].isdigit():
+                            continue
+                        ep = int(parts[0])
+                        if ep <= last_epoch:
+                            new_lines.append(line)
+
+                    with open(metrics_path, "w") as f:
+                        f.writelines(new_lines)
+
+            if last_epoch >= epochs:
+                print(
+                    f"Run already completed (last checkpoint epoch {last_epoch} "
+                    f">= target epochs {epochs}). Skipping training."
+                )
+                skip_training = True
+            else:
+                start_epoch = last_epoch + 1
+                print(f"Resuming training from epoch {start_epoch} to {epochs}.")
+        else:
+            print("\nrestart_from_save=True but no checkpoint found, training from scratch.")
+
+    if not skip_training:
+        print("\n" + "=" * 70)
+        print(f"Training for {epochs} epochs (starting at epoch {start_epoch})...")
+        print("=" * 70)
+
+        for epoch in range(start_epoch, epochs + 1):
+            start_time = time.time()
+
+            train_loss, train_acc = train_epoch(
+                model,
+                train_loader,
+                criterion,
+                optimizer,
+                device,
+                epoch=epoch,
+                epochs=epochs,
+            )
+            val_loss, val_acc = evaluate(model, val_loader, criterion, device)
+
+            epoch_time = time.time() - start_time
+
+            print(
+                f"Epoch {epoch:03d}/{epochs:03d}: "
+                f"Train Loss {train_loss:.4f}, Acc {train_acc:.2f}% | "
+                f"Val Loss {val_loss:.4f}, Acc {val_acc:.2f}% | "
+                f"Time {epoch_time:.2f}s"
             )
 
-        # Track best validation accuracy
-        if val_acc > best_val_acc:
-            best_val_acc = val_acc
-            best_epoch = epoch
+            # Append metrics to CSV (updated every epoch)
+            with open(metrics_path, "a") as f:
+                f.write(
+                    f"{epoch},{epoch_time:.4f},"
+                    f"{train_loss:.6f},{train_acc:.4f},"
+                    f"{val_loss:.6f},{val_acc:.4f}\n"
+                )
 
-        # Save checkpoint every `save_every` epochs
-        if save_every > 0 and epoch % save_every == 0:
-            ckpt_path = os.path.join(run_dir, f"checkpoint_epoch_{epoch}.pt")
-            torch.save(
-                {
-                    "epoch": epoch,
-                    "model_state_dict": model.state_dict(),
-                    "optimizer_state_dict": optimizer.state_dict(),
-                    "cfg": cfg,
-                    "train_loss": train_loss,
-                    "train_acc": train_acc,
-                    "val_loss": val_loss,
-                    "val_acc": val_acc,
-                    "layers": layers,
-                    "performer_variant": performer_variant,
-                },
-                ckpt_path,
-            )
-            print(f"  -> Saved checkpoint to {ckpt_path}")
+            # Track best validation accuracy (en tenant compte de ce qui existait déjà)
+            if val_acc > best_val_acc:
+                best_val_acc = val_acc
+                best_epoch = epoch
+
+            # Save checkpoint every save_every epochs
+            if save_every > 0 and epoch % save_every == 0:
+                ckpt_path = os.path.join(run_dir, f"checkpoint_epoch_{epoch}.pt")
+                torch.save(
+                    {
+                        "epoch": epoch,
+                        "model_state_dict": model.state_dict(),
+                        "optimizer_state_dict": optimizer.state_dict(),
+                        "cfg": cfg,
+                        "train_loss": train_loss,
+                        "train_acc": train_acc,
+                        "val_loss": val_loss,
+                        "val_acc": val_acc,
+                        "layers": layers,
+                        "performer_variant": performer_variant,
+                    },
+                    ckpt_path,
+                )
+                print(f"  -> Saved checkpoint to {ckpt_path}")
 
     print("\n" + "=" * 70)
     print("Evaluating on test set...")
@@ -734,7 +786,9 @@ def train_hybrid_performer_from_cfg(
 
 
 if __name__ == "__main__":
-    cfg_path_mnist = "configs/mnist_baseline.yaml"
-
-    model_hybrid = train_hybrid_performer_from_cfg(cfg_path_mnist)
+    cfg_path_mnist = "configs/mnist_test.yaml"
+    model_hybrid = train_hybrid_performer_from_cfg(
+        cfg_path_mnist,
+        restart_from_save=True, 
+    )
 

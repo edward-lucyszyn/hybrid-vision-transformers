@@ -18,8 +18,7 @@ import matplotlib.pyplot as plt
 
 # List of config files to analyze
 CONFIGS = [
-    "configs/mnist_baseline.yaml",
-    "configs/cifar10_baseline.yaml",
+    "configs/mnist_perf_d=2_m=128_variant=softmax.yaml",
 ]
 
 
