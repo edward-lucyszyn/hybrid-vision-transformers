@@ -1,0 +1,16 @@
+Group name: ReLU vs Softmax (cifar10, d=8, m=64)
+Common params: dataset=cifar10 | layers=[Perf,Perf,Perf,Perf,Perf,Perf,Perf,Perf] | m=64
+Varying params (legend): variant
+
+- cifar10_perf_d=8_m=64_variant=relu
+  label: variant=relu
+  epochs: 80
+  best val acc: 79.0800% at epoch 66
+  total time: 1009.74 s
+
+- cifar10_perf_d=8_m=64_variant=softmax
+  label: variant=softmax
+  epochs: 80
+  best val acc: 78.4600% at epoch 70
+  total time: 1162.08 s
+

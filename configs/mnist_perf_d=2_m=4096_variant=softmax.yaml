@@ -1,0 +1,27 @@
+experiment: mnist_perf_d=2_m=128_variant=softmax
+dataset:
+  name: mnist
+  root: ./data/cache
+  img_size: 28
+  patch: 4
+  augment: false
+model:
+  d_model: 64
+  heads: 4
+  mlp_ratio: 2.0
+  depth: 2
+  layers: ["Perf", "Perf"]
+  performer:
+    variant: "softmax"
+    kind: "favor+"
+    m: 4096
+optim:
+  batch_size: 128
+  lr: 0.0003
+  weight_decay: 0.05
+  epochs: 50
+log:
+  out_dir: ./runs
+  save_every: 5
+misc:
+  seed: 17092003

@@ -1,0 +1,26 @@
+cfg_name	setting	num_params	d	m	kernel	best_val_acc	best_val_epoch	best_train_acc	best_train_loss	best_val_loss	total_epochs	median_epoch_time_sec
+mnist_perf_d=1_m=64_variant=relu	Full Perf	12138	['Perf']	64	relu	94.680000	49	91.431700	0.264732	0.168657	50	3.609950
+mnist_perf_d=2_m=32_variant=relu	Full Perf	74122	['Perf', 'Perf']	32	relu	98.080000	45	97.188200	0.086482	0.064504	50	4.833250
+mnist_perf_d=2_m=64_variant=relu	Full Perf	74122	['Perf', 'Perf']	64	relu	98.140000	43	97.494200	0.077974	0.062330	50	4.889300
+mnist_perf_d=2_m=128_variant=relu	Full Perf	74122	['Perf', 'Perf']	128	relu	98.100000	50	97.364900	0.082301	0.063113	50	4.843450
+mnist_perf_d=2_m=1024_variant=relu	Full Perf	74122	['Perf', 'Perf']	1024	relu	98.020000	44	97.191900	0.086937	0.063449	50	7.239800
+mnist_perf_d=2_m=4096_variant=relu	Full Perf	74122	['Perf', 'Perf']	4096	relu	97.880000	49	97.044400	0.092479	0.074177	50	23.843450
+mnist_perf_d=6_m=64_variant=relu	Full Perf	1803658	['Perf', 'Perf', 'Perf', 'Perf', 'Perf', 'Perf']	64	relu	98.900000	49	99.715900	0.008563	0.046255	50	9.334500
+mnist_perf_d=1_m=64_variant=softmax	Full Perf	12138	['Perf']	64	softmax	95.860000	50	93.806500	0.196178	0.128569	50	22.727550
+mnist_perf_d=2_m=32_variant=softmax	Full Perf	74122	['Perf', 'Perf']	32	softmax	98.200000	49	97.716300	0.070383	0.063049	50	5.593250
+mnist_perf_d=2_m=64_variant=softmax	Full Perf	74122	['Perf', 'Perf']	64	softmax	98.080000	50	97.501500	0.078447	0.065922	50	5.601550
+mnist_perf_d=2_m=128_variant=softmax	Full Perf	74122	['Perf', 'Perf']	128	softmax	98.040000	46	97.842000	0.067572	0.062756	50	5.605500
+mnist_perf_d=2_m=1024_variant=softmax	Full Perf	74122	['Perf', 'Perf']	1024	softmax	98.360000	44	97.736400	0.071141	0.066146	50	8.836400
+mnist_perf_d=2_m=4096_variant=softmax	Full Perf	74122	['Perf', 'Perf']	4096	softmax	98.080000	50	97.561600	0.077717	0.065973	50	29.538300
+mnist_perf_d=6_m=64_variant=softmax	Full Perf	1803658	['Perf', 'Perf', 'Perf', 'Perf', 'Perf', 'Perf']	64	softmax	98.600000	41	99.479200	0.016143	0.049624	50	11.804450
+mnist_baseline_d=1	Full Reg	318538	['Reg']	64	softmax	96.600000	49	94.232600	0.171902	0.102888	50	3.428300
+mnist_baseline_d=2	Full Reg	615562	['Reg', 'Reg']	64	softmax	98.780000	45	98.761700	0.036871	0.040109	50	4.596850
+mnist_baseline_d=6	Full Reg	1803658	['Reg', 'Reg', 'Reg', 'Reg', 'Reg', 'Reg']	64	softmax	99.080000	39	99.515600	0.015176	0.033126	50	8.409000
+mnist_interwined_perf_d=2_m=64_variant=softmax	Intertwined (start=Perf)	74122	['Perf', 'Reg']	64	softmax	98.060000	48	97.235600	0.085821	0.056932	50	5.050650
+mnist_interwined_perf_d=6_m=64_variant=softmax	Intertwined (start=Perf)	1803658	['Perf', 'Reg', 'Perf', 'Reg', 'Perf', 'Reg']	64	softmax	98.900000	28	99.573900	0.012078	0.044420	50	9.893300
+mnist_interwined_reg_d=2_m=64_variant=softmax	Intertwined (start=Reg)	74122	['Reg', 'Perf']	64	softmax	98.160000	49	97.603400	0.076681	0.055409	50	5.103500
+mnist_interwined_reg_d=6_m=64_variant=softmax	Intertwined (start=Reg)	1803658	['Reg', 'Perf', 'Reg', 'Perf', 'Reg', 'Perf']	64	softmax	98.880000	38	99.577500	0.012273	0.042916	50	9.921500
+mnist_perf_reg_d=6_m=64_variant=softmax	Perf->Reg	1803658	['Perf', 'Perf', 'Perf', 'Reg', 'Reg', 'Reg']	64	softmax	98.940000	31	99.552000	0.013419	0.040526	50	10.214600
+mnist_perf_reg_d=2_m=64_variant=softmax	Perf->Reg	74122	['Perf', 'Reg']	64	softmax	98.140000	50	97.315700	0.082963	0.057122	50	5.158850
+mnist_reg_perf_d=2_m=64_variant=softmax	Reg->Perf	74122	['Reg', 'Perf']	64	softmax	98.000000	47	97.483200	0.078921	0.063356	50	5.198350
+mnist_reg_perf_d=6_m=64_variant=softmax	Reg->Perf	1803658	['Reg', 'Reg', 'Reg', 'Perf', 'Perf', 'Perf']	64	softmax	99.020000	49	99.646700	0.011299	0.037732	50	10.146650

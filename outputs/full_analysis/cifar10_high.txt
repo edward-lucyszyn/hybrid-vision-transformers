@@ -1,0 +1,5 @@
+cfg_name	setting	num_params	d	m	kernel	best_val_acc	best_val_epoch	best_train_acc	best_train_loss	best_val_loss	total_epochs	median_epoch_time_sec
+cifar10_high_perf_d=8_m=64_variant=softmax	Full Perf	832906	['Perf', 'Perf', 'Perf', 'Perf', 'Perf', 'Perf', 'Perf', 'Perf']	64	softmax	70.940000	58	72.186600	0.776257	0.825623	60	21.335450
+cifar10_high_interwined_perf_d=8_m=64_variant=softmax	Intertwined (start=Perf)	832906	['Perf', 'Reg', 'Perf', 'Reg', 'Perf', 'Reg', 'Perf', 'Reg']	64	softmax	73.140000	58	75.209200	0.693527	0.764844	60	24.048400
+cifar10_high_interwined_reg_d=8_m=64_variant=softmax	Intertwined (start=Reg)	832906	['Reg', 'Perf', 'Reg', 'Perf', 'Reg', 'Perf', 'Reg', 'Perf']	64	softmax	73.400000	59	75.302700	0.696443	0.754950	60	24.074300
+cifar10_high_reg_perf_d=8_m=64_variant=softmax	Reg->Perf	832906	['Reg', 'Reg', 'Reg', 'Reg', 'Perf', 'Perf', 'Perf', 'Perf']	64	softmax	73.920000	58	75.146900	0.696941	0.763981	60	24.063100

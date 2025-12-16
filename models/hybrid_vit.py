@@ -27,7 +27,7 @@ def build_dataloaders_from_cfg(cfg):
     """
     Build train/val/test dataloaders from a config dictionary.
 
-    This uses your custom build_dataloaders(...) and the fields
+    This uses custom build_dataloaders(...) and the fields
     defined under the "dataset", "optim" and "misc" sections.
     """
     dl_cfg = {
@@ -38,7 +38,7 @@ def build_dataloaders_from_cfg(cfg):
         "batch_size": int(cfg["optim"]["batch_size"]),
         "num_workers": max(4, os.cpu_count() - 4),
         "seed": int(cfg["misc"]["seed"]),
-        "val_size": 5000,  # you can move this to YAML later if needed
+        "val_size": 5000, 
     }
 
     print("DataLoader config:")
@@ -323,7 +323,7 @@ class HybridPerformer(nn.Module):
     - "Reg"  -> regular Transformer block with softmax self-attention
     - "Perf" -> Performer block (ReLU or softmax variant, controlled by performer_variant)
 
-    This gives you full control from the YAML config over which layers are regular
+    This gives full control from the YAML config over which layers are regular
     and which are Performer-based.
     """
     def __init__(
@@ -499,7 +499,7 @@ def train_hybrid_performer_from_cfg(
 ):
     """
     Train a HybridPerformer model using a YAML configuration file and
-    your custom dataloaders.
+    and custom dataloaders.
 
     If restart_from_save=True, the function:
       - looks for existing checkpoints in run_dir,

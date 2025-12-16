@@ -1,0 +1,22 @@
+Group name: Depth Comparison (cifar10, relu, m=64)
+Common params: dataset=cifar10 | m=64 | variant=relu
+Varying params (legend): layers
+
+- cifar10_perf_d=1_m=64_variant=relu
+  label: layers=[Perf]
+  epochs: 80
+  best val acc: 49.6200% at epoch 79
+  total time: 305.67 s
+
+- cifar10_perf_d=2_m=64_variant=relu
+  label: layers=[Perf,Perf]
+  epochs: 80
+  best val acc: 62.5200% at epoch 79
+  total time: 363.11 s
+
+- cifar10_perf_d=8_m=64_variant=relu
+  label: layers=[Perf,Perf,Perf,Perf,Perf,Perf,Perf,Perf]
+  epochs: 80
+  best val acc: 79.0800% at epoch 66
+  total time: 1009.74 s
+

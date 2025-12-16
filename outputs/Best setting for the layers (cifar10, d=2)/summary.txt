@@ -1,0 +1,40 @@
+Group name: Best setting for the layers (cifar10, d=2)
+Common params: dataset=cifar10 | m=64 | variant=softmax
+Varying params (legend): layers
+
+- cifar10_interwined_perf_d=2_m=64_variant=softmax
+  label: layers=[Perf,Reg]
+  epochs: 80
+  best val acc: 60.9600% at epoch 79
+  total time: 396.27 s
+
+- cifar10_interwined_reg_d=2_m=64_variant=softmax
+  label: layers=[Reg,Perf]
+  epochs: 80
+  best val acc: 63.1200% at epoch 80
+  total time: 377.77 s
+
+- cifar10_perf_d=2_m=64_variant=softmax
+  label: layers=[Perf,Perf]
+  epochs: 80
+  best val acc: 62.1400% at epoch 79
+  total time: 409.03 s
+
+- cifar10_perf_reg_d=2_m=64_variant=softmax
+  label: layers=[Perf,Reg]
+  epochs: 80
+  best val acc: 60.9800% at epoch 79
+  total time: 385.58 s
+
+- cifar10_reg_perf_d=2_m=64_variant=softmax
+  label: layers=[Reg,Perf]
+  epochs: 80
+  best val acc: 62.7600% at epoch 76
+  total time: 392.98 s
+
+- cifar10_baseline_d=2
+  label: layers=[Reg,Reg]
+  epochs: 140
+  best val acc: 75.0000% at epoch 126
+  total time: 614.17 s
+

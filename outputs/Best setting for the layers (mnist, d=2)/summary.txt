@@ -1,0 +1,40 @@
+Group name: Best setting for the layers (mnist, d=2)
+Common params: dataset=mnist | m=64 | variant=softmax
+Varying params (legend): layers
+
+- mnist_interwined_perf_d=2_m=64_variant=softmax
+  label: layers=[Perf,Reg]
+  epochs: 50
+  best val acc: 98.0600% at epoch 48
+  total time: 252.41 s
+
+- mnist_interwined_reg_d=2_m=64_variant=softmax
+  label: layers=[Reg,Perf]
+  epochs: 50
+  best val acc: 98.1600% at epoch 49
+  total time: 254.99 s
+
+- mnist_perf_d=2_m=64_variant=softmax
+  label: layers=[Perf,Perf]
+  epochs: 50
+  best val acc: 98.0800% at epoch 50
+  total time: 280.42 s
+
+- mnist_perf_reg_d=2_m=64_variant=softmax
+  label: layers=[Perf,Reg]
+  epochs: 50
+  best val acc: 98.1400% at epoch 50
+  total time: 258.18 s
+
+- mnist_reg_perf_d=2_m=64_variant=softmax
+  label: layers=[Reg,Perf]
+  epochs: 50
+  best val acc: 98.0000% at epoch 47
+  total time: 260.57 s
+
+- mnist_baseline_d=2
+  label: layers=[Reg,Reg]
+  epochs: 50
+  best val acc: 98.7800% at epoch 45
+  total time: 269.53 s
+

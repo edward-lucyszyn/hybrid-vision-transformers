@@ -1,0 +1,22 @@
+Group name: Regular Attention Depth (cifar10)
+Common params: dataset=cifar10 | m=64 | variant=softmax
+Varying params (legend): layers
+
+- cifar10_baseline_d=1
+  label: layers=[Reg]
+  epochs: 140
+  best val acc: 58.5800% at epoch 119
+  total time: 520.51 s
+
+- cifar10_baseline_d=2
+  label: layers=[Reg,Reg]
+  epochs: 140
+  best val acc: 75.0000% at epoch 126
+  total time: 614.17 s
+
+- cifar10_baseline_d=8
+  label: layers=[Reg,Reg,Reg,Reg,Reg,Reg,Reg,Reg]
+  epochs: 140
+  best val acc: 82.2800% at epoch 106
+  total time: 1737.67 s
+

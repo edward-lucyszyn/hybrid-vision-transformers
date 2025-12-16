@@ -1,0 +1,26 @@
+cfg_name	setting	num_params	d	m	kernel	best_val_acc	best_val_epoch	best_train_acc	best_train_loss	best_val_loss	total_epochs	median_epoch_time_sec
+cifar10_baseline_d=1	Full Reg	559626	['Reg']	64	softmax	58.580000	119	57.975000	1.163498	1.185991	140	3.702850
+cifar10_baseline_d=2	Full Reg	1086730	['Reg', 'Reg']	64	softmax	75.000000	126	79.460500	0.573230	0.731359	140	4.354300
+cifar10_baseline_d=8	Full Reg	4249354	['Reg', 'Reg', 'Reg', 'Reg', 'Reg', 'Reg', 'Reg', 'Reg']	64	softmax	82.280000	106	96.336400	0.104835	0.614183	140	11.859800
+cifar10_perf_d=1_m=64_variant=relu	Full Perf	12618	['Perf']	64	relu	49.620000	79	46.171700	1.464655	1.397036	80	3.815050
+cifar10_perf_d=1_m=64_variant=softmax	Full Perf	12618	['Perf']	64	softmax	44.920000	78	42.232000	1.536144	1.471492	80	3.902000
+cifar10_perf_d=2_m=32_variant=relu	Full Perf	75082	['Perf', 'Perf']	32	relu	62.420000	75	60.668200	1.096231	1.053551	80	4.498500
+cifar10_perf_d=2_m=32_variant=softmax	Full Perf	75082	['Perf', 'Perf']	32	softmax	62.820000	80	60.272000	1.106886	1.034939	80	5.226700
+cifar10_perf_d=2_m=64_variant=relu	Full Perf	75082	['Perf', 'Perf']	64	relu	62.520000	79	60.637000	1.090603	1.047421	80	4.517700
+cifar10_perf_d=2_m=64_variant=softmax	Full Perf	75082	['Perf', 'Perf']	64	softmax	62.140000	79	59.346100	1.124374	1.067770	80	5.107550
+cifar10_perf_d=2_m=128_variant=relu	Full Perf	75082	['Perf', 'Perf']	128	relu	62.660000	80	61.342600	1.073126	1.039291	80	4.503000
+cifar10_perf_d=2_m=128_variant=softmax	Full Perf	75082	['Perf', 'Perf']	128	softmax	60.880000	80	58.671700	1.147788	1.123260	80	5.204650
+cifar10_perf_d=2_m=1024_variant=relu	Full Perf	75082	['Perf', 'Perf']	1024	relu	54.880000	39	53.133900	1.289157	1.264682	40	6.575500
+cifar10_perf_d=2_m=1024_variant=softmax	Full Perf	75082	['Perf', 'Perf']	1024	softmax	54.500000	40	51.486800	1.330905	1.288218	40	8.149500
+cifar10_perf_d=2_m=4096_variant=relu	Full Perf	75082	['Perf', 'Perf']	4096	relu	54.300000	40	52.579700	1.301734	1.268305	40	21.266200
+cifar10_perf_d=2_m=4096_variant=softmax	Full Perf	75082	['Perf', 'Perf']	4096	softmax	54.840000	40	52.477300	1.297530	1.237215	40	27.269300
+cifar10_perf_d=8_m=64_variant=relu	Full Perf	4249354	['Perf', 'Perf', 'Perf', 'Perf', 'Perf', 'Perf', 'Perf', 'Perf']	64	relu	79.080000	66	92.830800	0.203250	0.690321	80	12.618100
+cifar10_perf_d=8_m=64_variant=softmax	Full Perf	4249354	['Perf', 'Perf', 'Perf', 'Perf', 'Perf', 'Perf', 'Perf', 'Perf']	64	softmax	78.460000	70	90.896500	0.250463	0.681231	80	14.542600
+cifar10_interwined_perf_d=2_m=64_variant=softmax	Intertwined (start=Perf)	75082	['Perf', 'Reg']	64	softmax	60.960000	79	57.543200	1.168088	1.101242	80	4.986850
+cifar10_interwined_perf_d=8_m=64_variant=softmax	Intertwined (start=Perf)	4249354	['Perf', 'Reg', 'Perf', 'Reg', 'Perf', 'Reg', 'Perf', 'Reg']	64	softmax	80.760000	64	91.321700	0.239572	0.634050	80	13.191050
+cifar10_interwined_reg_d=2_m=64_variant=softmax	Intertwined (start=Reg)	75082	['Reg', 'Perf']	64	softmax	63.120000	80	60.200800	1.105286	1.013979	80	4.715050
+cifar10_interwined_reg_d=8_m=64_variant=softmax	Intertwined (start=Reg)	4249354	['Reg', 'Perf', 'Reg', 'Perf', 'Reg', 'Perf', 'Reg', 'Perf']	64	softmax	80.140000	80	90.727400	0.258402	0.648040	80	12.923000
+cifar10_perf_reg_d=8_m=64_variant=softmax	Perf->Reg	4249354	['Perf', 'Perf', 'Perf', 'Perf', 'Reg', 'Reg', 'Reg', 'Reg']	64	softmax	80.800000	78	91.513100	0.234541	0.621884	80	13.219150
+cifar10_perf_reg_d=2_m=64_variant=softmax	Perf->Reg	75082	['Perf', 'Reg']	64	softmax	60.980000	79	57.692300	1.172161	1.085973	80	4.799650
+cifar10_reg_perf_d=2_m=64_variant=softmax	Reg->Perf	75082	['Reg', 'Perf']	64	softmax	62.760000	76	59.737800	1.118539	1.042408	80	4.899100
+cifar10_reg_perf_d=8_m=64_variant=softmax	Reg->Perf	4249354	['Reg', 'Reg', 'Reg', 'Reg', 'Perf', 'Perf', 'Perf', 'Perf']	64	softmax	78.940000	70	90.678400	0.255932	0.660420	80	13.139250

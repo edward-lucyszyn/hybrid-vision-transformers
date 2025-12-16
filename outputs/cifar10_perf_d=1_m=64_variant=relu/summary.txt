@@ -1,0 +1,6 @@
+Config name: cifar10_perf_d=1_m=64_variant=relu
+Model info: dataset=cifar10 | m=64 | variant=relu | layers=['Perf']
+
+Num epochs: 80
+Best val accuracy: 49.6200% (epoch 79)
+Total training time: 305.67 s

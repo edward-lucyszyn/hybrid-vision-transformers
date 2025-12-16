@@ -1,0 +1,28 @@
+Group name: High setting comparisons (cifar10_high, softmax, d=8, m=64)
+Common params: dataset=cifar10 | m=64 | variant=softmax
+Varying params (legend): layers
+
+- cifar10_high_interwined_perf_d=8_m=64_variant=softmax
+  label: layers=[Perf,Reg,Perf,Reg,Perf,Reg,Perf,Reg]
+  epochs: 60
+  best val acc: 73.1400% at epoch 58
+  total time: 1443.64 s
+
+- cifar10_high_interwined_reg_d=8_m=64_variant=softmax
+  label: layers=[Reg,Perf,Reg,Perf,Reg,Perf,Reg,Perf]
+  epochs: 60
+  best val acc: 73.4000% at epoch 59
+  total time: 1444.95 s
+
+- cifar10_high_perf_d=8_m=64_variant=softmax
+  label: layers=[Perf,Perf,Perf,Perf,Perf,Perf,Perf,Perf]
+  epochs: 60
+  best val acc: 70.9400% at epoch 58
+  total time: 1280.53 s
+
+- cifar10_high_reg_perf_d=8_m=64_variant=softmax
+  label: layers=[Reg,Reg,Reg,Reg,Perf,Perf,Perf,Perf]
+  epochs: 60
+  best val acc: 73.9200% at epoch 58
+  total time: 1444.07 s
+

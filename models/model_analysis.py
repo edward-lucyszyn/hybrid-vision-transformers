@@ -95,7 +95,7 @@ def build_model_info_string(cfg):
     parts = []
     parts.append(f"dataset={dataset_name}")
 
-    # Performer-specific info (only meaningful if you actually use Perf layers)
+    # Performer-specific info
     if m is not None:
         parts.append(f"m={m}")
     if variant is not None:

@@ -1,0 +1,22 @@
+Group name: Depth Comparison (mnist, relu, m=64)
+Common params: dataset=mnist | m=64 | variant=relu
+Varying params (legend): layers
+
+- mnist_perf_d=1_m=64_variant=relu
+  label: layers=[Perf]
+  epochs: 50
+  best val acc: 94.6800% at epoch 49
+  total time: 181.88 s
+
+- mnist_perf_d=2_m=64_variant=relu
+  label: layers=[Perf,Perf]
+  epochs: 50
+  best val acc: 98.1400% at epoch 43
+  total time: 244.17 s
+
+- mnist_perf_d=6_m=64_variant=relu
+  label: layers=[Perf,Perf,Perf,Perf,Perf,Perf]
+  epochs: 50
+  best val acc: 98.9000% at epoch 49
+  total time: 465.77 s
+

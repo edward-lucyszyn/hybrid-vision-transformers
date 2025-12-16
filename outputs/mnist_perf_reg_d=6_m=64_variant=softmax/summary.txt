@@ -1,0 +1,6 @@
+Config name: mnist_perf_reg_d=6_m=64_variant=softmax
+Model info: dataset=mnist | m=64 | variant=softmax | layers=['Perf', 'Perf', 'Perf', 'Reg', 'Reg', 'Reg']
+
+Num epochs: 50
+Best val accuracy: 98.9400% (epoch 31)
+Total training time: 510.98 s

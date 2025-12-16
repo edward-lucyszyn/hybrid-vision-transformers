@@ -25,7 +25,7 @@ def build_dataloaders_from_cfg(cfg):
     """
     Build train/val/test dataloaders from a config dictionary.
     
-    This uses your custom build_dataloaders(...) and the fields
+    This uses custom build_dataloaders(...) and the fields
     defined under the "dataset", "optim" and "misc" sections.
     """
     dl_cfg = {
@@ -36,7 +36,7 @@ def build_dataloaders_from_cfg(cfg):
         "batch_size": cfg["optim"]["batch_size"],
         "num_workers": max(4, os.cpu_count() - 4),
         "seed": cfg["misc"]["seed"],
-        "val_size": 5000,  # you can move this to the YAML if you want
+        "val_size": 5000, 
     }
 
     print("DataLoader config:")
@@ -303,7 +303,7 @@ def train_epoch(model, train_loader, criterion, optimizer, device, epoch=None, e
     else:
         desc = "Training"
 
-    # tqdm over the training dataloader so you see progress for each epoch
+    # tqdm over the training dataloader to see progress for each epoch
     for images, labels in tqdm(train_loader, desc=desc, leave=False):
         images, labels = images.to(device), labels.to(device)
 
@@ -556,10 +556,9 @@ def train_vision_transformer_from_cfg(cfg_path: str, device=None):
 
 
 if __name__ == "__main__":
-    # Example: train using your MNIST and CIFAR-10 config files
     # Adapt paths if needed.
-    model_mnist = train_vision_transformer_from_cfg("configs/mnist_baseline.yaml")
+    model_mnist = train_vision_transformer_from_cfg("configs/mnist_test.yaml")
 
     print("\n\n")
 
-    model_cifar = train_vision_transformer_from_cfg("configs/cifar10_baseline.yaml")
+    model_cifar = train_vision_transformer_from_cfg("configs/cifar10_test.yaml")

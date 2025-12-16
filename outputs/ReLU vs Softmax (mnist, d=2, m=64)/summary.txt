@@ -1,0 +1,16 @@
+Group name: ReLU vs Softmax (mnist, d=2, m=64)
+Common params: dataset=mnist | layers=[Perf,Perf] | m=64
+Varying params (legend): variant
+
+- mnist_perf_d=2_m=64_variant=relu
+  label: variant=relu
+  epochs: 50
+  best val acc: 98.1400% at epoch 43
+  total time: 244.17 s
+
+- mnist_perf_d=2_m=64_variant=softmax
+  label: variant=softmax
+  epochs: 50
+  best val acc: 98.0800% at epoch 50
+  total time: 280.42 s
+

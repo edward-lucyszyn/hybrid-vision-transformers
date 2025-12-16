@@ -1,0 +1,22 @@
+Group name: Depth Comparison (mnist, softmax, m=64)
+Common params: dataset=mnist | m=64 | variant=softmax
+Varying params (legend): layers
+
+- mnist_perf_d=1_m=64_variant=softmax
+  label: layers=[Perf]
+  epochs: 50
+  best val acc: 95.8600% at epoch 50
+  total time: 1154.01 s
+
+- mnist_perf_d=2_m=64_variant=softmax
+  label: layers=[Perf,Perf]
+  epochs: 50
+  best val acc: 98.0800% at epoch 50
+  total time: 280.42 s
+
+- mnist_perf_d=6_m=64_variant=softmax
+  label: layers=[Perf,Perf,Perf,Perf,Perf,Perf]
+  epochs: 50
+  best val acc: 98.6000% at epoch 41
+  total time: 589.02 s
+

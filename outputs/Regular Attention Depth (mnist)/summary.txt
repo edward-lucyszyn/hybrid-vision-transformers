@@ -1,0 +1,22 @@
+Group name: Regular Attention Depth (mnist)
+Common params: dataset=mnist | m=64 | variant=softmax
+Varying params (legend): layers
+
+- mnist_baseline_d=1
+  label: layers=[Reg]
+  epochs: 50
+  best val acc: 96.6000% at epoch 49
+  total time: 172.19 s
+
+- mnist_baseline_d=2
+  label: layers=[Reg,Reg]
+  epochs: 50
+  best val acc: 98.7800% at epoch 45
+  total time: 269.53 s
+
+- mnist_baseline_d=6
+  label: layers=[Reg,Reg,Reg,Reg,Reg,Reg]
+  epochs: 50
+  best val acc: 99.0800% at epoch 39
+  total time: 419.97 s
+

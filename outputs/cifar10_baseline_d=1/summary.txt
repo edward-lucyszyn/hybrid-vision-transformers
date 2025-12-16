@@ -1,0 +1,6 @@
+Config name: cifar10_baseline_d=1
+Model info: dataset=cifar10 | m=64 | variant=softmax | layers=['Reg']
+
+Num epochs: 140
+Best val accuracy: 58.5800% (epoch 119)
+Total training time: 520.51 s

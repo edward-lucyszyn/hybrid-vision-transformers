@@ -1,0 +1,22 @@
+Group name: Depth Comparison (cifar10, softmax, m=64)
+Common params: dataset=cifar10 | m=64 | variant=softmax
+Varying params (legend): layers
+
+- cifar10_perf_d=1_m=64_variant=softmax
+  label: layers=[Perf]
+  epochs: 80
+  best val acc: 44.9200% at epoch 78
+  total time: 313.45 s
+
+- cifar10_perf_d=2_m=64_variant=softmax
+  label: layers=[Perf,Perf]
+  epochs: 80
+  best val acc: 62.1400% at epoch 79
+  total time: 409.03 s
+
+- cifar10_perf_d=8_m=64_variant=softmax
+  label: layers=[Perf,Perf,Perf,Perf,Perf,Perf,Perf,Perf]
+  epochs: 80
+  best val acc: 78.4600% at epoch 70
+  total time: 1162.08 s
+

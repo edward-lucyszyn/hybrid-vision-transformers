@@ -1,0 +1,27 @@
+experiment: mnist_perf_d=6_m=64_variant=relu
+dataset:
+  name: mnist
+  root: ./data/cache
+  img_size: 28
+  patch: 4
+  augment: false
+model:
+  d_model: 192
+  heads: 4
+  mlp_ratio: 2.0
+  depth: 6
+  layers: ["Perf", "Perf", "Perf", "Perf", "Perf", "Perf"]
+  performer:
+    variant: "relu"
+    kind: "favor+"
+    m: 256
+optim:
+  batch_size: 128
+  lr: 0.0003
+  weight_decay: 0.05
+  epochs: 50
+log:
+  out_dir: ./runs
+  save_every: 5
+misc:
+  seed: 17092003

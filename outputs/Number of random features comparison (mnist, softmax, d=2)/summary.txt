@@ -1,0 +1,34 @@
+Group name: Number of random features comparison (mnist, softmax, d=2)
+Common params: dataset=mnist | layers=[Perf,Perf] | variant=softmax
+Varying params (legend): m
+
+- mnist_perf_d=2_m=32_variant=softmax
+  label: m=32
+  epochs: 50
+  best val acc: 98.2000% at epoch 49
+  total time: 439.38 s
+
+- mnist_perf_d=2_m=64_variant=softmax
+  label: m=64
+  epochs: 50
+  best val acc: 98.0800% at epoch 50
+  total time: 280.42 s
+
+- mnist_perf_d=2_m=128_variant=softmax
+  label: m=128
+  epochs: 50
+  best val acc: 98.0400% at epoch 46
+  total time: 279.65 s
+
+- mnist_perf_d=2_m=1024_variant=softmax
+  label: m=1024
+  epochs: 50
+  best val acc: 98.3600% at epoch 44
+  total time: 441.93 s
+
+- mnist_perf_d=2_m=4096_variant=softmax
+  label: m=4096
+  epochs: 50
+  best val acc: 98.0800% at epoch 50
+  total time: 1477.28 s
+

@@ -1,0 +1,6 @@
+Config name: cifar10_perf_d=8_m=64_variant=softmax
+Model info: dataset=cifar10 | m=64 | variant=softmax | layers=['Perf', 'Perf', 'Perf', 'Perf', 'Perf', 'Perf', 'Perf', 'Perf']
+
+Num epochs: 80
+Best val accuracy: 78.4600% (epoch 70)
+Total training time: 1162.08 s
