@@ -33,7 +33,8 @@ The repository is organized as follows:
 ├── data.ipynb                 # quick notebook to inspect how data and configs are loaded
 ├── models/
 │   ├── regular_vit.py         # original regular ViT implementation (kept for reference)
-│   ├── model_analysis.py      # scripts to generate graphs from runs results
+│   ├── model_analysis.py      # single-run analysis (plots + summary per config)
+│   ├── model_analysis_group.py# grouped analysis (multi-config plots + full tables)
 │   └── hybrid_vit.py          # main Hybrid ViT + Performer implementation
 ├── configs/
 │   ├── mnist_baseline_*.yaml
@@ -60,28 +61,17 @@ The repository is organized as follows:
 
 Notes:
 
-Here’s an updated version:
-
 * `models/hybrid_vit.py` contains:
 
-  * the `PatchEmbedding` module
+  * the patch embedding module
   * regular multi-head self-attention
   * Performer attention (ReLU and softmax-kernel variants)
-  * the `HybridPerformer` model and the main training/evaluation loops
+  * the `HybridPerformer` model and the training/evaluation loops
 
-* `data/dataloaders.py` builds the train/val/test `DataLoader`s from a small config dictionary (dataset name, image size, augmentation flag, batch size, number of workers, etc.).
+* `models/model_analysis_group.py` aggregates multiple runs to produce:
 
-* `data/datasets.py` constructs the underlying `Dataset` objects for MNIST and CIFAR-10, including a deterministic train/validation split.
-
-* `data/transforms.py` defines the torchvision preprocessing pipelines (resize, data augmentation, normalization, conversion of MNIST to 3 channels, …).
-
-* `data.ipynb` (at the root of the repository) is a small notebook to quickly inspect how configs are loaded, how `build_dataloaders` works, and what the resulting batches look like before moving on to full experiments.
-
-* `runs/` and `outputs/` are created automatically when you run the code:
-
-  * each experiment gets its own subdirectory in `runs/` (one per config file)
-  * metrics, parameter counts, and checkpoints are stored there
-  * `outputs/` can be used by analysis scripts/notebooks to save aggregated results, tables, and plots.
+  * grouped comparison plots (multiple models on the same curves)
+  * dataset-level summary tables in `outputs/full_analysis/`
 
 ---
 
@@ -91,85 +81,16 @@ Each experiment is defined by a YAML config in `configs/`.
 A typical config contains:
 
 * dataset settings (MNIST or CIFAR-10, image size, patch size, augmentation)
-
-* model settings:
-
-  * `d_model`, `heads`, `mlp_ratio`, `depth`
-  * `layers`: list of "Reg" or "Perf" defining the stack of blocks
-  * `performer.variant`: "softmax" or "relu"
-  * `performer.m`: number of random features
-
-* optimization settings (batch size, learning rate, weight decay, number of epochs)
-
+* model settings (`d_model`, `heads`, `mlp_ratio`, `depth`, `layers`, and Performer params)
+* optimization settings (batch size, LR, weight decay, epochs)
 * logging/output settings (`out_dir`, `save_every`)
-
-* misc settings (random seed)
-
-Example excerpt:
-
-```yaml
-experiment: cifar10_perf_d=2_m=64_variant=softmax
-dataset:
-  name: cifar10
-  root: ./data/cache
-  img_size: 32
-  patch: 4
-  augment: true
-model:
-  d_model: 64
-  heads: 4
-  mlp_ratio: 2.0
-  depth: 6
-  layers: ["Perf", "Perf", "Perf", "Perf", "Perf", "Perf"]
-  performer:
-    variant: "softmax"
-    kind: "favor+"
-    m: 64
-optim:
-  batch_size: 128
-  lr: 0.0003
-  weight_decay: 0.05
-  epochs: 40
-log:
-  out_dir: ./runs
-  save_every: 5
-misc:
-  seed: 17092003
-```
+* misc settings (seed)
 
 ---
 
 ## 4. Running experiments
 
 The main entry point is `main.py`.
-It imports the high-level training function from `models/hybrid_vit.py` and specifies which configs to run.
-
-Example structure of `main.py`:
-
-```python
-import torch
-from models.hybrid_vit import train_hybrid_performer_from_cfg
-
-HYBRID_CONFIGS = [
-    "configs/mnist_baseline_d=6.yaml",
-    "configs/mnist_perf_d=2_m=64_variant=softmax.yaml",
-    "configs/cifar10_baseline_d=2.yaml",
-    "configs/cifar10_perf_d=2_m=64_variant=softmax.yaml",
-    # add or remove any config file you want to run
-]
-
-def main():
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"\nUsing device: {device}")
-
-    for cfg_path in HYBRID_CONFIGS:
-        train_hybrid_performer_from_cfg(cfg_path, device=device)
-
-if __name__ == "__main__":
-    main()
-```
-
-To launch the trainings, simply activate your environment and run:
 
 ```bash
 python3 main.py
@@ -178,17 +99,68 @@ python3 main.py
 The code will:
 
 1. Load each YAML config listed in `HYBRID_CONFIGS`.
-2. Build the corresponding dataloaders (MNIST or CIFAR-10).
-3. Construct the HybridPerformer model according to the `layers` and `performer` settings.
-4. Train the model for the specified number of epochs.
-5. Evaluate on the validation set after each epoch.
-6. Optionally save checkpoints every `save_every` epochs.
+2. Build dataloaders.
+3. Build the model according to `layers`.
+4. Train and evaluate on validation after each epoch.
+5. Save logs/checkpoints in `runs/<cfg_name>/`.
+
+### Resuming from a saved checkpoint (`start_from_save`)
+
+The training code supports resuming a run from a previously saved checkpoint.
+
+* If `start_from_save=False` (default): training starts from epoch 1 with fresh weights.
+* If `start_from_save=True`: the script looks inside `runs/<cfg_name>/` for a saved checkpoint (typically the latest `checkpoint_epoch_*.pt`), reloads:
+
+  * model weights
+  * optimizer state
+  * last epoch index
+    and continues training from the next epoch.
+
+This is useful if:
+
+* a run was interrupted (Colab timeout, crash),
+* you want to extend training beyond the original number of epochs,
+* you want to avoid restarting expensive runs.
+
+(Implementation detail: the resume path is tied to the config name, since `runs/<cfg_name>/` is the canonical run folder.)
 
 ---
 
-## 5. Outputs and logging
+## 5. Post-training analysis (group plots + tables)
 
-For each config file `configs/XYZ.yaml`, the code creates a run directory:
+### Single-run analysis (per config)
+
+If you want plots for one run:
+
+```bash
+python3 models/model_analysis.py
+```
+
+It reads `runs/<cfg_name>/metrics.csv` and saves plots into `outputs/<cfg_name>/`.
+
+### Grouped analysis (multiple runs on the same plots)
+
+To reproduce the figures and aggregated tables used in the report:
+
+```bash
+python3 models/model_analysis_group.py
+```
+
+This script:
+
+* reads multiple `runs/<cfg_name>/metrics.csv`,
+* generates grouped plots (e.g. depth comparisons, kernel comparisons, feature comparisons) into `outputs/<group_name>/`,
+* writes dataset-level summary tables into:
+
+  * `outputs/full_analysis/mnist.txt`
+  * `outputs/full_analysis/cifar10.txt`
+    (one line per config).
+
+---
+
+## 6. Outputs and logging
+
+For each config file `configs/XYZ.yaml`, the code creates:
 
 ```text
 runs/XYZ/
@@ -199,30 +171,6 @@ runs/XYZ/
     ...
 ```
 
-* `metrics.csv`: one row per epoch, containing:
-
-  * epoch index
-  * epoch time
-  * training loss and accuracy
-  * validation loss and accuracy
-
-* `number_of_parameters.txt`: total number of trainable parameters for that model.
-
-* `checkpoint_epoch_*.pt`: model and optimizer state dicts saved periodically according to `save_every` in the config.
-
-The `outputs/` directory is intended for higher-level analysis artifacts, for example:
-
-* aggregated CSV files comparing models
-* plots of accuracy vs. number of random features m
-* plots of accuracy vs. number of parameters
-* training/inference time comparisons
-
-You can generate these from your own analysis scripts or notebooks by reading the CSV files and parameter counts from the `runs/` directory and writing your results into `outputs/`.
-
----
-
-With this setup, you can:
-
-* plug different configs into `HYBRID_CONFIGS` in `main.py`
-* run `python3 main.py`
-* then compare the models using the logs in `runs/` and any additional plots in `outputs/`.
+* `metrics.csv`: epoch index, epoch time, train loss/acc, val loss/acc
+* `number_of_parameters.txt`: total trainable parameters
+* `checkpoint_epoch_*.pt`: saved periodically according to `save_every`
